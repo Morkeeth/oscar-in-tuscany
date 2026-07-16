@@ -80,6 +80,13 @@ export const AGENT_VOTES: { name: string; avatar: string; color: string; q: stri
   },
 ];
 
+// the method - the eval hook, tuned for a man who judges taste for a living.
+export const METHOD = {
+  kicker: 'il metodo · the method',
+  title: 'the model is the variable. the taste is the constant.',
+  body: `i built this page the way i build everything now: one brief, five terminals, the model does the typing. i have even run the same brief across four different claude models just to watch what taste each one has. that is the whole game today. the tools got fast and cheap. knowing what is good stayed rare. that rare part is what you would bring, and the part i most want to learn from up close.`,
+};
+
 // the podcast - the "i already do this, out loud, for free" proof.
 export const PODCAST = {
   kicker: 'out loud, already',

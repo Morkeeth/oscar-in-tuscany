@@ -11,7 +11,7 @@ import './fable/fable.css';
 import { motion, useInView, useMotionValue, useSpring, useScroll, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { OSCAR, LINKS, STATS, statNum, FEATURED, HACKATHON_TIMELINE, COLORS, AGENT_COUNT } from './shared/data';
-import { RUBIN, BRIDGE, MACHINE, ANSWERS, AGENT_VOTES, PODCAST, ASK, CONTACT } from './shared/rubin';
+import { RUBIN, BRIDGE, MACHINE, ANSWERS, AGENT_VOTES, METHOD, PODCAST, ASK, CONTACT } from './shared/rubin';
 
 const PALETTE = Object.values(COLORS);
 // wine + gold live in fable.css, not the COLORS object - mirror them here for sketches
@@ -342,6 +342,57 @@ function ScrollProgress() {
   return <motion.div className="scroll-progress" style={{ scaleX }} />;
 }
 
+// hidden italian words. type them anywhere.
+const EGGS: Record<string, string> = {
+  ciao: 'ciao! benvenuto. resta un po\'.',
+  salute: 'salute. the chianti glass actually pours, by the way.',
+  pizza: 'margherita. no pineapple. non negoziabile.',
+  andiamo: 'andiamo. bags already packed.',
+  rick: 'if you are the one reading this: ciao, rick.',
+  taste: 'the taste is the constant. the model is the variable.',
+  vespa: 'vroom. it putters across the hills if you watch.',
+  bagel: 'bagel says ciao from a server in germany. never sleeps.',
+  toscana: 'ci vediamo lì.',
+};
+
+function useTypedEggs() {
+  const [msg, setMsg] = useState<string | null>(null);
+  useEffect(() => {
+    let buf = '';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.length !== 1 || e.metaKey || e.ctrlKey) return;
+      buf = (buf + e.key.toLowerCase()).slice(-10);
+      for (const word of Object.keys(EGGS)) {
+        if (buf.endsWith(word)) { setMsg(EGGS[word]); buf = ''; setTimeout(() => setMsg(null), 4000); }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  return msg;
+}
+
+// a quiet status line, bottom-left. static dot (no cop-show pulsing).
+function StatusBar() {
+  const [uptime, setUptime] = useState('00:00');
+  useEffect(() => {
+    const start = performance.now();
+    const id = setInterval(() => {
+      const s = Math.floor((performance.now() - start) / 1000);
+      const p = (n: number) => String(n).padStart(2, '0');
+      setUptime(`${p(Math.floor(s / 60))}:${p(s % 60)}`);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="statusbar">
+      <span style={{ width: 6, height: 6, borderRadius: '50%', background: COLORS.green, display: 'inline-block' }} />
+      <span>morkeeth@toscana ~ 5 terminals · uptime {uptime}</span>
+      <span className="blink">▌</span>
+    </div>
+  );
+}
+
 function ScatterName({ text }: { text: string }) {
   return (
     <h1 className="serif" style={{ fontSize: 'clamp(2.4rem, 8.5vw, 5.4rem)', letterSpacing: '-0.03em', lineHeight: 1, fontWeight: 400 }}>
@@ -516,6 +567,7 @@ export default function Home() {
   // light, happy, always-on tuscan festa. no dark mode (oscar's call).
   const maximalism = true;
   const { pieces, burst } = useBurst();
+  const eggMsg = useTypedEggs();
 
   useEffect(() => {
     const original = document.title;
@@ -530,8 +582,19 @@ export default function Home() {
       onDoubleClick={(e) => burst(e.clientX, e.clientY, 14)}>
 
       <ScrollProgress />
+      <StatusBar />
       <ConfettiLayer pieces={pieces} />
       <Cutouts maximalism={maximalism} />
+
+      <AnimatePresence>
+        {eggMsg && (
+          <motion.div className="egg-toast"
+            initial={{ opacity: 0, y: 16, x: '-50%' }} animate={{ opacity: 1, y: 0, x: '-50%' }} exit={{ opacity: 0, y: 16, x: '-50%' }}
+            transition={{ type: 'spring', stiffness: 260, damping: 22 }}>
+            {eggMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── hero ── */}
       <section className="frame">
@@ -659,8 +722,17 @@ export default function Home() {
                     </div>
                   )}
                   <TiltCard>
-                    <div className="project-tile" style={{ '--pc': p.color, '--tilt': `${(rnd(i * 9 + 2) * 2.4 - 1.2).toFixed(2)}deg`, cursor: 'pointer' } as React.CSSProperties}
+                    <div className="project-tile" style={{ '--pc': p.color, '--tilt': `${(rnd(i * 9 + 2) * 2.4 - 1.2).toFixed(2)}deg`, cursor: 'pointer', overflow: 'hidden' } as React.CSSProperties}
                       onClick={(e) => burst(e.clientX, e.clientY, 14, p.color)} title="click for confetti">
+                      {p.image && (
+                        <div style={{ margin: '-26px -26px 16px', position: 'relative' }}>
+                          <motion.img src={p.image} alt={p.name} loading="lazy"
+                            initial={{ scale: 1.06, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true, margin: '-8%' }}
+                            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                            style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }} />
+                          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 3, background: p.color }} />
+                        </div>
+                      )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
                         <h3 className="serif" style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.5rem)', color: p.color }}>{p.name.toLowerCase()}</h3>
                         <span className="mono" style={{ fontSize: 10, opacity: 0.6, color: p.color }}>{p.result} · {p.year}</span>
@@ -696,6 +768,23 @@ export default function Home() {
                 <div className="serif" style={{ fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', color: COLORS.red }}><Counter to={PODCAST.episodes} /></div>
                 <div className="mono" style={{ fontSize: 10, opacity: 0.5, letterSpacing: '0.12em', textTransform: 'uppercase' }}>episodes · wave radio</div>
               </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── the method: taste is the constant ── */}
+      <section className="frame frame-short">
+        <div style={{ maxWidth: 600, width: '100%' }}>
+          <Reveal><ChapterLabel text={METHOD.kicker} /><h2 className="serif chapter-title">{METHOD.title}</h2></Reveal>
+          <Reveal delay={0.15}><p className="body-text" style={{ marginTop: 22 }}>{METHOD.body}</p></Reveal>
+          <Reveal delay={0.3}>
+            <div style={{ marginTop: 26, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              {['fable', 'opus', 'sonnet', 'haiku'].map((m, i) => (
+                <span key={m} className="mono" style={{ fontSize: 10, letterSpacing: '0.08em', padding: '6px 12px', borderRadius: 999,
+                  border: `1.5px solid ${PALETTE[i % PALETTE.length]}`, color: PALETTE[i % PALETTE.length] }}>{m}</span>
+              ))}
+              <span className="mono" style={{ fontSize: 10, letterSpacing: '0.08em', opacity: 0.5, alignSelf: 'center' }}>same brief · four takes</span>
             </div>
           </Reveal>
         </div>
