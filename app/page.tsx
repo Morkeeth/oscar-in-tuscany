@@ -8,6 +8,7 @@
 // ════════════════════════════════════════════════════════════
 
 import './fable/fable.css';
+import './model.css';
 import { motion, useInView, useMotionValue, useSpring, useScroll, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { OSCAR, LINKS, STATS, statNum, FEATURED, HACKATHON_TIMELINE, COLORS, AGENT_COUNT } from './shared/data';
@@ -16,6 +17,14 @@ import { RUBIN, BRIDGE, MACHINE, ANSWERS, AGENT_VOTES, METHOD, PODCAST, ASK, CON
 const PALETTE = Object.values(COLORS);
 // wine + gold live in fable.css, not the COLORS object - mirror them here for sketches
 const WINE = '#8e2b3b';
+
+// the same brief, four claude models. switching reskins the page (light mode only).
+const MODELS = [
+  { id: 'fable', name: 'Fable 5', tag: 'the maximalist', accent: COLORS.orange },
+  { id: 'opus', name: 'Opus 4.8', tag: 'the composer', accent: COLORS.purple },
+  { id: 'sonnet', name: 'Sonnet 5', tag: 'the editor', accent: COLORS.blue },
+  { id: 'haiku', name: 'Haiku 4.5', tag: 'the minimalist', accent: COLORS.green },
+] as const;
 
 // deterministic pseudo-random - rounded so SSR and client agree (see data.ts note)
 function rnd(seed: number) {
@@ -342,6 +351,21 @@ function ScrollProgress() {
   return <motion.div className="scroll-progress" style={{ scaleX }} />;
 }
 
+// the model switcher - the eval made playable. same page, different model's taste.
+function ModelSwitch({ model, setModel }: { model: string; setModel: (id: string) => void }) {
+  return (
+    <div className="model-switch-bar" title="same brief. the model is the variable.">
+      {MODELS.map((m) => (
+        <button key={m.id} data-active={m.id === model}
+          style={{ background: m.id === model ? m.accent : 'transparent' }}
+          onClick={() => setModel(m.id)}>
+          {m.name.split(' ')[0].toLowerCase()}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // hidden italian words. type them anywhere.
 const EGGS: Record<string, string> = {
   ciao: 'ciao! benvenuto. resta un po\'.',
@@ -568,6 +592,8 @@ export default function Home() {
   const maximalism = true;
   const { pieces, burst } = useBurst();
   const eggMsg = useTypedEggs();
+  const [model, setModel] = useState('fable');
+  const mv = MODELS.find((m) => m.id === model)!;
 
   useEffect(() => {
     const original = document.title;
@@ -577,11 +603,12 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="page-wrapper maximalism"
-      style={{ background: 'var(--max-bg)', color: 'var(--max-fg)' }}
+    <div className={`page-wrapper maximalism model-${model}`}
+      style={{ background: 'var(--max-bg)', color: 'var(--max-fg)', ['--model-accent']: mv.accent } as React.CSSProperties}
       onDoubleClick={(e) => burst(e.clientX, e.clientY, 14)}>
 
       <ScrollProgress />
+      <ModelSwitch model={model} setModel={setModel} />
       <StatusBar />
       <ConfettiLayer pieces={pieces} />
       <Cutouts maximalism={maximalism} />
@@ -709,7 +736,7 @@ export default function Home() {
         <div style={{ maxWidth: 640, width: '100%' }}>
           <Reveal>
             <ChapterLabel text="past work · le prove" />
-            <h2 className="serif chapter-title">the fun stuff first, the day jobs after.</h2>
+            <h2 className="serif chapter-title">i can&apos;t stop building things.</h2>
           </Reveal>
           <div style={{ marginTop: 30, display: 'grid', gap: 12 }}>
             {SHOWCASE.map((p, i) => {
@@ -780,11 +807,19 @@ export default function Home() {
           <Reveal delay={0.15}><p className="body-text" style={{ marginTop: 22 }}>{METHOD.body}</p></Reveal>
           <Reveal delay={0.3}>
             <div style={{ marginTop: 26, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              {['fable', 'opus', 'sonnet', 'haiku'].map((m, i) => (
-                <span key={m} className="mono" style={{ fontSize: 10, letterSpacing: '0.08em', padding: '6px 12px', borderRadius: 999,
-                  border: `1.5px solid ${PALETTE[i % PALETTE.length]}`, color: PALETTE[i % PALETTE.length] }}>{m}</span>
-              ))}
-              <span className="mono" style={{ fontSize: 10, letterSpacing: '0.08em', opacity: 0.5, alignSelf: 'center' }}>same brief · four takes</span>
+              {MODELS.map((m) => {
+                const active = m.id === model;
+                return (
+                  <button key={m.id} onClick={() => setModel(m.id)} className="mono"
+                    style={{ fontSize: 10, letterSpacing: '0.08em', padding: '6px 12px', borderRadius: 999, cursor: 'pointer',
+                      border: `1.5px solid ${m.accent}`, background: active ? m.accent : 'transparent', color: active ? '#fff' : m.accent, transition: 'all .3s' }}>
+                    {m.name.toLowerCase()}
+                  </button>
+                );
+              })}
+              <span className="mono" style={{ fontSize: 10, letterSpacing: '0.08em', opacity: 0.6, alignSelf: 'center' }}>
+                these switch the page. go on. now: {mv.tag}.
+              </span>
             </div>
           </Reveal>
         </div>

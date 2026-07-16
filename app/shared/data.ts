@@ -233,7 +233,7 @@ export const PROJECTS: Project[] = [
     year: '2022-24',
     track: 'work',
     color: '#f2a039',
-    image: '/projects/anotherblock.jpg',
+    image: '/projects/anotherblock-songs.png',
     details: [
       'drops: Rihanna, Michael Jackson, The Weeknd, Offset & Metro Boomin, Alan Walker',
       `0 to ${STATS.users} users, ${STATS.anotherblockVolume} in sales, 93K+ collectibles to 35K+ customers`,
@@ -253,7 +253,7 @@ export const PROJECTS: Project[] = [
     year: '2017-20',
     track: 'work',
     color: '#3bb58f',
-    image: '/projects/etablera.jpg',
+    image: '/projects/etablera-campaign.png',
     details: [
       'organized hack for sweden, hack the crisis, hack for earth',
       'stage for 400 people',
@@ -326,6 +326,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'BriefMCP',
     slug: 'briefmcp',
+    featured: true,
     oneLiner: 'shared context layer so agents stop re-explaining everything',
     story: 'agents can\'t read your spec docs. briefmcp gives them a protocol to share context. built at paris innov\'hack against 50 teams.',
     result: 'paris finalist',
@@ -333,6 +334,7 @@ export const PROJECTS: Project[] = [
     year: '2026',
     track: 'agents',
     color: '#9b6fc0',
+    image: '/projects/briefmcp.png',
     links: { repo: 'https://github.com/Morkeeth/BriefMCP' },
   },
   {
