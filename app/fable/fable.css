@@ -1,0 +1,538 @@
+@layer base {
+  :root {
+    --bg: #060606;
+    --fg: #f0ede8;
+    --fg-dim: #74726c;
+    --fg-faint: #262624;
+
+    --max-bg: #faf6ef;
+    --max-fg: #181614;
+
+    /* matisse palette */
+    --max-orange: #f2a039;
+    --max-blue: #2d5ff5;
+    --max-red: #e84033;
+    --max-green: #1db954;
+    --max-purple: #9b6fc0;
+    --max-pink: #ff5c8a;
+    --wine: #8e2b3b;
+    --gold: #ffd34d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    background: var(--bg);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-dm-sans), system-ui, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: rgba(240, 237, 232, 0.18); }
+  .maximalism ::selection { background: var(--max-orange); color: var(--max-fg); }
+
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; }
+}
+
+@layer components {
+
+  /* ── layout ── */
+
+  .page-wrapper {
+    position: relative;
+    transition: background 1.2s ease, color 1.2s ease;
+  }
+
+  .frame {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 28px;
+    position: relative;
+  }
+
+  .frame-short {
+    min-height: 72vh;
+  }
+
+  .frame-tall {
+    min-height: 120vh;
+  }
+
+  @media (min-width: 768px) {
+    .frame { padding: 48px 64px; }
+  }
+
+  /* ── type ── */
+
+  .mono { font-family: var(--font-jetbrains-mono), monospace; }
+  .serif { font-family: var(--font-dm-serif), Georgia, serif; }
+
+  .chapter-label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.45;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .chapter-label::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  .chapter-title {
+    font-size: clamp(1.7rem, 4.5vw, 2.7rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    transition: transform 0.9s cubic-bezier(.22,1,.36,1);
+    transform-origin: left bottom;
+  }
+
+  .maximalism .chapter-title {
+    transform: scale(1.05);
+  }
+
+  .body-text {
+    font-size: 15.5px;
+    line-height: 1.75;
+    font-weight: 300;
+    opacity: 0.65;
+    max-width: 480px;
+  }
+
+  .blink {
+    animation: blink 1s steps(2, start) infinite;
+  }
+
+  @keyframes blink {
+    to { visibility: hidden; }
+  }
+
+  /* ── paris sketches ── */
+
+  .sketch {
+    color: inherit;
+    opacity: 0.55;
+    transition: opacity 0.8s ease;
+  }
+
+  .maximalism .sketch { opacity: 0.9; }
+
+  /* matisse fill that floods sketches in maximalism */
+  .msf {
+    fill-opacity: 0;
+    transition: fill-opacity 1.4s ease;
+  }
+
+  .maximalism .msf { fill-opacity: 0.75; }
+
+  .wine-fill {
+    fill: rgba(240, 237, 232, 0.3);
+    transition: fill 1.2s ease;
+  }
+
+  .maximalism .wine-fill { fill: var(--wine); }
+
+  .boat {
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+
+  .maximalism .boat { opacity: 0.85; }
+
+  /* ── matisse cut-outs (floating decorations) ── */
+
+  .cutout {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 1s ease, transform 1.4s cubic-bezier(.22,1,.36,1);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .maximalism .cutout {
+    opacity: 1;
+    animation: floaty var(--fd, 9s) ease-in-out infinite alternate;
+  }
+
+  @keyframes floaty {
+    from { translate: 0 0; rotate: 0deg; }
+    to { translate: 8px -18px; rotate: 4deg; }
+  }
+
+  /* one shape pulses like a kick drum */
+  .maximalism .beat {
+    animation: beat 0.62s cubic-bezier(.3, 0, .2, 1) infinite;
+  }
+
+  @keyframes beat {
+    0% { scale: 1; }
+    18% { scale: 1.16; }
+    45% { scale: 0.97; }
+    100% { scale: 1; }
+  }
+
+  @media (max-width: 700px) {
+    .cutout { display: none; }
+  }
+
+  /* ── equalizer ── */
+
+  .eq {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    height: 56px;
+    cursor: crosshair;
+  }
+
+  .eq span {
+    width: 5px;
+    height: var(--h, 60%);
+    border-radius: 2px;
+    background: currentColor;
+    opacity: 0.3;
+    transform-origin: bottom;
+    animation: eqbar var(--d, 0.8s) ease-in-out infinite alternate;
+    animation-delay: var(--ad, 0s);
+    transition: opacity 0.4s, background 1s;
+  }
+
+  .eq:hover span {
+    animation-duration: calc(var(--d, 0.8s) * 0.4);
+    opacity: 0.7;
+  }
+
+  .maximalism .eq span {
+    background: var(--bar-c, var(--max-orange));
+    opacity: 0.85;
+  }
+
+  @keyframes eqbar {
+    from { transform: scaleY(0.15); }
+    to { transform: scaleY(1); }
+  }
+
+  /* ── project tiles ── */
+
+  .project-tile {
+    padding: 26px;
+    border: 1px solid var(--fg-faint);
+    border-radius: 4px;
+    transition:
+      border-color 0.8s ease,
+      border-radius 0.8s ease,
+      background 0.8s ease,
+      box-shadow 0.8s ease,
+      transform 0.8s cubic-bezier(.22,1,.36,1);
+    cursor: default;
+    position: relative;
+  }
+
+  .project-tile:hover {
+    border-color: var(--fg-dim);
+  }
+
+  .maximalism .project-tile {
+    border: 2px solid var(--pc, var(--max-orange));
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--pc, var(--max-orange)) 6%, transparent);
+    box-shadow: 7px 7px 0 color-mix(in srgb, var(--pc, var(--max-orange)) 28%, transparent);
+    transform: rotate(var(--tilt, 0deg));
+  }
+
+  .maximalism .project-tile:hover {
+    transform: rotate(0deg) translateY(-4px);
+    box-shadow: 10px 12px 0 color-mix(in srgb, var(--pc, var(--max-orange)) 22%, transparent);
+  }
+
+  .badge {
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid currentColor;
+    border-radius: 100px;
+    opacity: 0.45;
+    white-space: nowrap;
+    transition: all 0.8s ease;
+  }
+
+  .maximalism .badge {
+    opacity: 1;
+    border-color: var(--pc, var(--max-orange));
+    color: var(--pc, var(--max-orange));
+  }
+
+  /* ── the switch ── */
+
+  .mode-switch {
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 16px 32px;
+    border: 1px solid currentColor;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mode-switch:hover {
+    letter-spacing: 0.22em;
+  }
+
+  .mode-switch .peek {
+    display: inline-flex;
+    gap: 4px;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+
+  .mode-switch:hover .peek {
+    opacity: 1;
+    width: 34px;
+  }
+
+  .mode-switch .peek i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .maximalism .mode-switch {
+    background: var(--max-fg);
+    color: var(--max-bg);
+    border-color: var(--max-fg);
+    border-radius: 100px;
+  }
+
+  .mini-switch {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    z-index: 60;
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border: 1px solid currentColor;
+    border-radius: 100px;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.3s;
+  }
+
+  .mini-switch:hover { opacity: 1; }
+
+  .maximalism .mini-switch {
+    opacity: 0.8;
+    background: var(--max-bg);
+  }
+
+  /* ── fixed chrome ── */
+
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--fg);
+    transform-origin: 0 50%;
+    z-index: 70;
+    opacity: 0.4;
+    transition: background 1s, opacity 1s;
+  }
+
+  .maximalism .scroll-progress {
+    height: 3px;
+    opacity: 1;
+    background: linear-gradient(90deg, var(--max-orange), var(--max-pink), var(--max-blue), var(--max-green));
+  }
+
+  .statusbar {
+    position: fixed;
+    bottom: 14px;
+    left: 18px;
+    z-index: 50;
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  .statusbar .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--max-green);
+    animation: pulse-dot 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (max-width: 700px) {
+    .statusbar { display: none; }
+  }
+
+  /* Clear the ModelSwitcher rail (196px) once it becomes a left rail at md,
+     so the status line never sits on top of "compare all →". */
+  @media (min-width: 768px) {
+    .statusbar { left: 214px; }
+  }
+
+  .egg-toast {
+    position: fixed;
+    bottom: 44px;
+    left: 50%;
+    z-index: 80;
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 12px 20px;
+    border: 1px solid currentColor;
+    background: var(--bg);
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 92vw;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .maximalism .egg-toast {
+    background: var(--max-bg);
+    border-radius: 100px;
+    border-color: var(--max-orange);
+    color: var(--max-fg);
+  }
+
+  /* ── particles / confetti ── */
+
+  .cursor-particle,
+  .confetti-piece {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999;
+    will-change: transform, opacity;
+  }
+
+  /* ── aurora (norrsken over paris, maximalism only) ── */
+
+  .aurora {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 42vh;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .aurora i {
+    position: absolute;
+    left: -25%;
+    right: -25%;
+    height: 110px;
+    border-radius: 100%;
+    filter: blur(46px);
+    animation: aurora-drift ease-in-out infinite alternate;
+  }
+
+  .aurora i:nth-child(1) {
+    top: -40px;
+    background: linear-gradient(90deg, var(--max-green), #2dd4bf, var(--max-blue));
+    opacity: 0.3;
+    animation-duration: 11s;
+  }
+
+  .aurora i:nth-child(2) {
+    top: 36px;
+    background: linear-gradient(90deg, var(--max-purple), var(--max-green), #2dd4bf);
+    opacity: 0.2;
+    animation-duration: 17s;
+  }
+
+  .aurora i:nth-child(3) {
+    top: 104px;
+    background: linear-gradient(90deg, #2dd4bf, var(--max-pink), var(--max-blue));
+    opacity: 0.13;
+    animation-duration: 23s;
+  }
+
+  @keyframes aurora-drift {
+    from { transform: translateX(-5%) skewY(-1.5deg); }
+    to { transform: translateX(5%) skewY(1.5deg); }
+  }
+
+  .aurora-caption {
+    position: absolute;
+    top: 16px;
+    right: 70px;
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.3;
+  }
+
+  /* ── hero boot lines ── */
+
+  .boot-lines {
+    position: absolute;
+    top: 22px;
+    left: 22px;
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 10px;
+    line-height: 1.9;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+  }
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-dm-serif);
+  --font-mono: var(--font-jetbrains-mono);
+}

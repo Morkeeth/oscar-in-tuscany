@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f0ede8;
+    --fg-dim: #706e68;
+    --fg-faint: #2a2a28;
+
+    --max-bg: #faf6ef;
+    --max-fg: #181614;
+    --max-orange: #f2a039;
+    --max-blue: #2d5ff5;
+    --max-red: #e84033;
+    --max-green: #1db954;
+    --max-purple: #9b6fc0;
+    --max-pink: #ff5c8a;
+    --wine: #8e2b3b;
+    --gold: #ffd34d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--bg); scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-dm-sans), system-ui, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: rgba(240, 237, 232, 0.18); }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; }
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-dm-serif);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+/* Portfolio mobile density (Oscar, Jul 13): the model pages use full-viewport
+   (100vh/90vh/…) sections for desktop drama, which means one screen of scroll
+   per section on mobile before the actual work. On small screens, collapse
+   those viewport-height sections to content height so the projects hit fast.
+   Desktop keeps the full-height cinematics untouched. */
+@media (max-width: 767px) {
+  main section[style*="vh"] {
+    min-height: auto !important;
+  }
+}
