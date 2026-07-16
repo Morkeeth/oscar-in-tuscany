@@ -26,13 +26,13 @@ export default function OpengraphImage() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div style={{ display: 'flex', height: 22, borderRadius: 4, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(0,0,0,0.12)' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', height: 22, borderRadius: 4, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(0,0,0,0.12)' }}>
             <div style={{ width: 16, background: '#009246' }} />
             <div style={{ width: 16, background: '#f7f7f0' }} />
             <div style={{ width: 16, background: '#ce2b37' }} />
           </div>
           <div style={{ fontFamily: 'sans-serif', fontSize: 22, letterSpacing: 3, textTransform: 'uppercase', color: '#74726c' }}>
-            {RUBIN.eyebrow} · {RUBIN.host}
+            {`${RUBIN.eyebrow} · ${RUBIN.host}`}
           </div>
         </div>
 
