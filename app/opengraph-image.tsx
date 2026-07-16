@@ -1,12 +1,13 @@
 import { ImageResponse } from 'next/og';
-import { OSCAR, STATS, COLORS } from './shared/data';
+import { COLORS } from './shared/data';
+import { RUBIN } from './shared/rubin';
 
-// link-preview card — fable aesthetic: near-black, warm off-white, matisse dots
-export const alt = 'oscar morke — pm at ledger, builds agents at night';
+// link-preview card — light tuscan: warm cream, matisse dots, the thesis, a tricolore.
+export const alt = 'oscar in tuscany — an application to rick rubin. you bring 40 years of taste, i bring the tools.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const DOTS = [COLORS.orange, COLORS.blue, COLORS.red, COLORS.green, COLORS.purple, COLORS.pink];
+const DOTS = [COLORS.orange, COLORS.green, COLORS.red, COLORS.blue, COLORS.purple, '#f2a039'];
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -18,29 +19,39 @@ export default function OpengraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: '#060606',
-          color: '#f0ede8',
+          background: '#faf6ef',
+          color: '#181614',
           padding: '72px 80px',
-          fontFamily: 'sans-serif',
+          fontFamily: 'serif',
         }}
       >
-        <div style={{ display: 'flex', gap: 14 }}>
-          {DOTS.map((c) => (
-            <div key={c} style={{ width: 18, height: 18, borderRadius: 9, background: c }} />
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <div style={{ fontSize: 96, fontWeight: 700, letterSpacing: -3 }}>{OSCAR.name.toLowerCase()}</div>
-          <div style={{ fontSize: 34, color: '#74726c' }}>
-            pm at ledger. i make things on nights and weekends, some of them win prizes.
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <div style={{ display: 'flex', height: 22, borderRadius: 4, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(0,0,0,0.12)' }}>
+            <div style={{ width: 16, background: '#009246' }} />
+            <div style={{ width: 16, background: '#f7f7f0' }} />
+            <div style={{ width: 16, background: '#ce2b37' }} />
+          </div>
+          <div style={{ fontFamily: 'sans-serif', fontSize: 22, letterSpacing: 3, textTransform: 'uppercase', color: '#74726c' }}>
+            {RUBIN.eyebrow} · {RUBIN.host}
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 56, fontSize: 26, color: '#74726c' }}>
-          <span style={{ color: '#f0ede8' }}>{STATS.hackathonWins} hackathon wins</span>
-          <span style={{ color: '#f0ede8' }}>{STATS.prizes} in prizes</span>
-          <span style={{ color: '#f0ede8' }}>{STATS.terminals} terminals at 3am</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+          <div style={{ fontSize: 92, fontWeight: 500, letterSpacing: -2, lineHeight: 1 }}>oscar in tuscany</div>
+          <div style={{ fontSize: 46, color: '#8e2b3b', lineHeight: 1.15 }}>
+            you bring 40 years of taste. i bring the tools.
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ fontFamily: 'sans-serif', fontSize: 26, color: '#74726c' }}>
+            music guy turned agent builder · 30 days · toscana
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            {DOTS.map((c, i) => (
+              <div key={i} style={{ width: 20, height: 20, borderRadius: 10, background: c }} />
+            ))}
+          </div>
         </div>
       </div>
     ),
