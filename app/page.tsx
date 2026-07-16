@@ -11,7 +11,7 @@ import './fable/fable.css';
 import { motion, useInView, useMotionValue, useSpring, useScroll, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { OSCAR, LINKS, STATS, statNum, FEATURED, HACKATHON_TIMELINE, COLORS, AGENT_COUNT } from './shared/data';
-import { RUBIN, BRIDGE, MACHINE, ANSWERS, AGENT_VOTES, PODCAST, ASK, VIDEO, CONTACT } from './shared/rubin';
+import { RUBIN, BRIDGE, MACHINE, ANSWERS, AGENT_VOTES, PODCAST, ASK, CONTACT } from './shared/rubin';
 
 const PALETTE = Object.values(COLORS);
 // wine + gold live in fable.css, not the COLORS object — mirror them here for sketches
@@ -212,6 +212,40 @@ function ChiantiGlass() {
   );
 }
 
+// an olive branch — a little tuscan peace offering
+function OliveBranch({ flip = false }: { flip?: boolean }) {
+  const { ref, inView } = useDrawn();
+  return (
+    <svg ref={ref} viewBox="0 0 160 60" fill="none" className="sketch"
+      style={{ width: 'clamp(110px, 16vw, 150px)', transform: flip ? 'scaleX(-1)' : 'none' }}>
+      <motion.path d="M8 44 C50 30 100 24 152 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" {...drawProps(inView)} />
+      {[30, 56, 82, 108, 134].map((x, i) => {
+        const y = 42 - (x - 8) * 0.2;
+        return (
+          <g key={x}>
+            <path className="msf" d={`M${x} ${y} C${x - 9} ${y - 4} ${x - 9} ${y - 15} ${x} ${y - 12} C${x + 5} ${y - 8} ${x + 2} ${y - 3} ${x} ${y} Z`} fill={COLORS.teal} />
+            <motion.path d={`M${x} ${y} C${x - 9} ${y - 4} ${x - 9} ${y - 15} ${x} ${y - 12} C${x + 5} ${y - 8} ${x + 2} ${y - 3} ${x} ${y} Z`}
+              stroke="currentColor" strokeWidth="1" strokeLinecap="round" {...drawProps(inView, 0.3 + i * 0.1)} />
+            <motion.circle cx={x + 12} cy={y - 3} r="3.4" fill={COLORS.green}
+              initial={{ scale: 0 }} animate={inView ? { scale: 1 } : {}} transition={{ delay: 0.6 + i * 0.1, type: 'spring', stiffness: 240, damping: 12 }} />
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// a little tricolore ribbon — italian symbolism, worn lightly
+function Tricolore() {
+  return (
+    <span style={{ display: 'inline-flex', height: 12, borderRadius: 3, overflow: 'hidden', boxShadow: '0 0 0 1px color-mix(in srgb, currentColor 18%, transparent)', verticalAlign: 'middle' }}>
+      <span style={{ width: 10, background: '#009246' }} />
+      <span style={{ width: 10, background: '#f7f7f0' }} />
+      <span style={{ width: 10, background: '#ce2b37' }} />
+    </span>
+  );
+}
+
 function Equalizer() {
   const bars = useMemo(() =>
     Array.from({ length: 18 }, (_, i) => ({
@@ -302,34 +336,6 @@ function ConfettiLayer({ pieces }: { pieces: Piece[] }) {
     </>
   );
 }
-function CursorTrail({ active }: { active: boolean }) {
-  const [particles, setParticles] = useState<{ id: number; x: number; y: number; color: string; shape: number }[]>([]);
-  const counter = useRef(0);
-  useEffect(() => {
-    if (!active) { setParticles([]); return; }
-    const onMove = (e: MouseEvent) => {
-      if (Math.random() > 0.35) return;
-      counter.current++;
-      setParticles((prev) => [...prev.slice(-13), { id: counter.current, x: e.clientX, y: e.clientY,
-        color: PALETTE[Math.floor(Math.random() * PALETTE.length)], shape: Math.floor(Math.random() * 4) }]);
-    };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, [active]);
-  if (!active) return null;
-  return (
-    <>
-      {particles.map((p) => (
-        <motion.div key={p.id} className="cursor-particle" style={{ left: p.x - 5, top: p.y - 5 }}
-          initial={{ scale: 1, opacity: 0.85, rotate: 0 }} animate={{ scale: 0, opacity: 0, y: -34, rotate: 120 }}
-          transition={{ duration: 0.9, ease: 'easeOut' }}>
-          <ShapeGlyph shape={p.shape} color={p.color} size={11} />
-        </motion.div>
-      ))}
-    </>
-  );
-}
-
 function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
@@ -485,30 +491,6 @@ function RecordTimeline() {
   );
 }
 
-// ── the video slot ──────────────────────────────────────────
-
-function VideoBlock() {
-  if (VIDEO.url) {
-    const isEmbed = /youtube|vimeo|player\./.test(VIDEO.url);
-    return (
-      <div style={{ width: '100%', maxWidth: 640, aspectRatio: '16 / 9', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--fg-faint)', marginInline: 'auto' }}>
-        {isEmbed
-          ? <iframe src={VIDEO.url} style={{ width: '100%', height: '100%', border: 0 }} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
-          : <video src={VIDEO.url} poster={VIDEO.poster} controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-      </div>
-    );
-  }
-  return (
-    <div style={{ width: '100%', maxWidth: 640, aspectRatio: '16 / 9', borderRadius: 12, marginInline: 'auto',
-      border: '1px dashed color-mix(in srgb, currentColor 30%, transparent)', display: 'flex',
-      flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'relative', overflow: 'hidden' }}>
-      <span className="serif" style={{ fontSize: 'clamp(1.2rem, 3vw, 1.7rem)' }}>▶ the two-minute film</span>
-      <span className="mono" style={{ fontSize: 11, opacity: 0.5, letterSpacing: '0.06em' }}>{VIDEO.caption}</span>
-      <span className="mono" style={{ fontSize: 9, opacity: 0.3, marginTop: 6, textTransform: 'uppercase', letterSpacing: '0.14em' }}>drops in here on final cut</span>
-    </div>
-  );
-}
-
 // ════════════════════════════════════════════════════════════
 //  page
 // ════════════════════════════════════════════════════════════
@@ -521,98 +503,93 @@ const STAT_ITEMS = [
 ];
 
 export default function Home() {
-  const [maximalism, setMaximalism] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  // light, happy, always-on tuscan festa. no dark mode (oscar's call).
+  const maximalism = true;
   const { pieces, burst } = useBurst();
 
   useEffect(() => {
     const original = document.title;
-    const onVis = () => { document.title = document.hidden ? 'ci vediamo in toscana' : original; };
+    const onVis = () => { document.title = document.hidden ? 'ci vediamo in toscana ☀' : original; };
     document.addEventListener('visibilitychange', onVis);
     return () => { document.removeEventListener('visibilitychange', onVis); document.title = original; };
   }, []);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.7);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const toggle = useCallback((x?: number, y?: number) => {
-    setMaximalism((m) => { if (!m && x !== undefined && y !== undefined) burst(x, y, 28); return !m; });
-  }, [burst]);
-
   return (
-    <div className={`page-wrapper ${maximalism ? 'maximalism' : ''}`}
-      style={{ background: maximalism ? 'var(--max-bg)' : 'var(--bg)', color: maximalism ? 'var(--max-fg)' : 'var(--fg)' }}
-      onDoubleClick={(e) => { if (maximalism) burst(e.clientX, e.clientY, 12); }}>
+    <div className="page-wrapper maximalism"
+      style={{ background: 'var(--max-bg)', color: 'var(--max-fg)' }}
+      onDoubleClick={(e) => burst(e.clientX, e.clientY, 14)}>
 
       <ScrollProgress />
-      <CursorTrail active={maximalism} />
       <ConfettiLayer pieces={pieces} />
       <Cutouts maximalism={maximalism} />
 
-      <AnimatePresence>
-        {(scrolled || maximalism) && (
-          <motion.button className="mini-switch" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-            onClick={(e) => toggle(e.clientX, e.clientY)}>
-            {maximalism ? '○ sobrio' : '● festa'}
-          </motion.button>
-        )}
-      </AnimatePresence>
-
       {/* ── hero ── */}
       <section className="frame">
-        <div className="boot-lines" style={{ opacity: 0.3 }}>
-          {['$ ssh oscar@tuscany', '$ ./apply --to rick-rubin', 'ready.'].map((line, i) => (
+        <div className="boot-lines" style={{ opacity: 0.35 }}>
+          {['$ ssh oscar@tuscany', '$ ./apply --to rick-rubin', 'buongiorno.'].map((line, i) => (
             <motion.div key={line} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 + i * 0.5, duration: 0.4 }}>{line}</motion.div>
           ))}
         </div>
         <div style={{ textAlign: 'center', maxWidth: 760 }}>
-          <motion.p className="mono" initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} transition={{ delay: 0.1, duration: 1 }}
-            style={{ fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22 }}>
-            {RUBIN.eyebrow} · {RUBIN.host}
-          </motion.p>
+          <motion.div className="mono" initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} transition={{ delay: 0.1, duration: 1 }}
+            style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 22, display: 'inline-flex', gap: 12, alignItems: 'center' }}>
+            <Tricolore /> {RUBIN.eyebrow} · {RUBIN.host}
+          </motion.div>
           <ScatterName text={OSCAR.name.toLowerCase()} />
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4, duration: 1 }} style={{ marginTop: 14, display: 'flex', justifyContent: 'center' }}>
             <SketchUnderline width={300} delay={1.6} />
           </motion.div>
           <motion.p className="serif" style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.6rem)', lineHeight: 1.25, marginTop: 30, fontWeight: 400, whiteSpace: 'pre-line' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 0.95 }} transition={{ delay: 1.7, duration: 1 }}>
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7, duration: 1 }}>
             {RUBIN.thesis}
           </motion.p>
-          <motion.p style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.15rem)', marginTop: 22, fontWeight: 300, opacity: 0.62, maxWidth: 540, marginInline: 'auto' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 0.62 }} transition={{ delay: 2, duration: 1 }}>
+          <motion.p style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.15rem)', marginTop: 22, fontWeight: 400, opacity: 0.7, maxWidth: 540, marginInline: 'auto' }}
+            initial={{ opacity: 0 }} animate={{ opacity: 0.7 }} transition={{ delay: 2, duration: 1 }}>
             {RUBIN.subhead}
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.3, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginTop: 28 }}>
             {([
               { t: 'ex-anotherblock · music on-chain', c: COLORS.orange },
-              { t: `${STATS.hackathonWins}× hackathon winner`, c: COLORS.teal },
+              { t: `${STATS.hackathonWins}× hackathon winner`, c: COLORS.red },
               { t: `${AGENT_COUNT}-agent os · ships by morning`, c: COLORS.green },
-              { t: 'staff pm · ledger', c: COLORS.ledger },
+              { t: 'staff pm · ledger', c: COLORS.blue },
             ] as const).map((chip) => (
               <span key={chip.t} className="mono" style={{ fontSize: 11, letterSpacing: '0.04em', padding: '7px 14px', borderRadius: 999,
-                border: `1.5px solid color-mix(in srgb, ${chip.c} 55%, transparent)`, background: `color-mix(in srgb, ${chip.c} 13%, transparent)`, color: chip.c }}>
+                border: `1.5px solid ${chip.c}`, background: `color-mix(in srgb, ${chip.c} 14%, transparent)`, color: chip.c }}>
                 {chip.t}
               </span>
             ))}
           </motion.div>
           <motion.p className="mono" style={{ fontSize: 11, letterSpacing: '0.18em', marginTop: 40, textTransform: 'uppercase' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 0.35 }} transition={{ delay: 2.7, duration: 1 }}>scroll</motion.p>
+            initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ delay: 2.7, duration: 1 }}>scorri ↓</motion.p>
+        </div>
+      </section>
+
+      {/* ── start with the agents (the fun hook) ── */}
+      <section className="frame frame-short">
+        <div style={{ maxWidth: 600, width: '100%' }}>
+          <Reveal>
+            <ChapterLabel text="la squadra · the team" />
+            <h2 className="serif chapter-title">first, i asked my agents if they wanted to come.</h2>
+            <p className="body-text" style={{ marginTop: 18, marginBottom: 30, maxWidth: 520 }}>
+              i run a little crew of them. bagel lives on a server in germany (open claw) and writes; hermes ships what the system makes.
+              they have memory and opinions, so i asked them straight. unedited:
+            </p>
+          </Reveal>
+          <AgentChat />
         </div>
       </section>
 
       {/* ── why me: the music bridge ── */}
       <section className="frame frame-short">
         <div style={{ maxWidth: 560, width: '100%' }}>
-          <Reveal><ChapterLabel text={BRIDGE.kicker} /><h2 className="serif chapter-title">{BRIDGE.title}</h2></Reveal>
+          <Reveal><ChapterLabel text={`${BRIDGE.kicker} · perché io`} /><h2 className="serif chapter-title">{BRIDGE.title}</h2></Reveal>
           <Reveal delay={0.15}><p className="body-text" style={{ marginTop: 22 }}>{BRIDGE.body}</p></Reveal>
           <Reveal delay={0.3}>
             <div style={{ marginTop: 36 }}>
               <Equalizer />
-              <p className="serif" style={{ fontSize: 'clamp(1.1rem, 2.8vw, 1.5rem)', marginTop: 20, opacity: 0.9 }}>{BRIDGE.pull}</p>
+              <p className="serif" style={{ fontSize: 'clamp(1.1rem, 2.8vw, 1.5rem)', marginTop: 20, opacity: 0.95 }}>{BRIDGE.pull}</p>
             </div>
           </Reveal>
         </div>
@@ -621,7 +598,7 @@ export default function Home() {
       {/* ── the machine: agent usage at a glance ── */}
       <section className="frame">
         <div style={{ maxWidth: 720, width: '100%' }}>
-          <Reveal><ChapterLabel text={MACHINE.kicker} /><h2 className="serif chapter-title">{MACHINE.title}</h2></Reveal>
+          <Reveal><ChapterLabel text={`${MACHINE.kicker} · la macchina`} /><h2 className="serif chapter-title">{MACHINE.title}</h2></Reveal>
           <Reveal delay={0.15}><p className="body-text" style={{ marginTop: 22, marginBottom: 34, maxWidth: 540 }}>{MACHINE.body}</p></Reveal>
           <TerminalWall maximalism={maximalism} />
         </div>
@@ -633,10 +610,10 @@ export default function Home() {
           {STAT_ITEMS.map((n, i) => (
             <Reveal key={n.label} delay={i * 0.12}>
               <div style={{ textAlign: 'center' }}>
-                <div className="serif" style={{ fontSize: 'clamp(2rem, 6vw, 3.4rem)', lineHeight: 1 }}>
+                <div className="serif" style={{ fontSize: 'clamp(2rem, 6vw, 3.4rem)', lineHeight: 1, color: PALETTE[i % PALETTE.length] }}>
                   <Counter to={n.to} prefix={n.prefix} suffix={n.suffix} />
                 </div>
-                <div className="mono" style={{ fontSize: 10, opacity: 0.4, marginTop: 10, letterSpacing: '0.12em', textTransform: 'uppercase' }}>{n.label}</div>
+                <div className="mono" style={{ fontSize: 10, opacity: 0.5, marginTop: 10, letterSpacing: '0.12em', textTransform: 'uppercase' }}>{n.label}</div>
               </div>
             </Reveal>
           ))}
@@ -647,24 +624,10 @@ export default function Home() {
       <section className="frame">
         <div style={{ maxWidth: 640, width: '100%' }}>
           <Reveal>
-            <ChapterLabel text="the questions you asked" />
-            <h2 className="serif chapter-title">i answered them. click through.</h2>
+            <ChapterLabel text="le domande · the questions you asked" />
+            <h2 className="serif chapter-title">i answered them. tap to open.</h2>
           </Reveal>
           <div style={{ marginTop: 34 }}><QandA /></div>
-        </div>
-      </section>
-
-      {/* ── the agents said yes ── */}
-      <section className="frame">
-        <div style={{ maxWidth: 600, width: '100%' }}>
-          <Reveal>
-            <ChapterLabel text="i asked my team" />
-            <h2 className="serif chapter-title">i asked my agents if they wanted in.</h2>
-            <p className="body-text" style={{ marginTop: 18, marginBottom: 30 }}>
-              they have memory and opinions. so i put the question to them straight. unedited replies:
-            </p>
-          </Reveal>
-          <AgentChat />
         </div>
       </section>
 
@@ -672,21 +635,21 @@ export default function Home() {
       <section className="frame">
         <div style={{ maxWidth: 640, width: '100%' }}>
           <Reveal>
-            <ChapterLabel text="past work · the receipts" />
+            <ChapterLabel text="past work · le prove" />
             <h2 className="serif chapter-title">a decade of shipping under deadline.</h2>
           </Reveal>
           <div style={{ marginTop: 30, display: 'grid', gap: 12 }}>
             {FEATURED.slice(0, 6).map((p, i) => (
               <Reveal key={p.slug} delay={i * 0.06}>
                 <TiltCard>
-                  <div className="project-tile" style={{ '--pc': p.color, '--tilt': '0deg', cursor: 'pointer' } as React.CSSProperties}
-                    onClick={(e) => burst(e.clientX, e.clientY, 12, p.color)} title="click for confetti">
+                  <div className="project-tile" style={{ '--pc': p.color, '--tilt': `${(rnd(i * 9 + 2) * 2.4 - 1.2).toFixed(2)}deg`, cursor: 'pointer' } as React.CSSProperties}
+                    onClick={(e) => burst(e.clientX, e.clientY, 14, p.color)} title="click for confetti">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-                      <h3 className="serif" style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.5rem)', color: maximalism ? p.color : 'inherit', transition: 'color .8s' }}>{p.name.toLowerCase()}</h3>
-                      <span className="mono" style={{ fontSize: 10, opacity: 0.55, color: maximalism ? p.color : 'inherit' }}>{p.result} · {p.year}</span>
+                      <h3 className="serif" style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.5rem)', color: p.color }}>{p.name.toLowerCase()}</h3>
+                      <span className="mono" style={{ fontSize: 10, opacity: 0.6, color: p.color }}>{p.result} · {p.year}</span>
                     </div>
-                    <p style={{ fontSize: 13.5, lineHeight: 1.6, fontWeight: 300, opacity: 0.6, marginTop: 8 }}>{p.oneLiner}</p>
-                    {p.links?.live && <a href={p.links.live} target="_blank" rel="noopener" className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: maximalism ? p.color : 'inherit', opacity: 0.7, display: 'inline-block', marginTop: 10 }}>live ↗</a>}
+                    <p style={{ fontSize: 13.5, lineHeight: 1.6, fontWeight: 400, opacity: 0.7, marginTop: 8 }}>{p.oneLiner}</p>
+                    {p.links?.live && <a href={p.links.live} target="_blank" rel="noopener" className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: p.color, opacity: 0.9, display: 'inline-block', marginTop: 10 }}>live ↗</a>}
                   </div>
                 </TiltCard>
               </Reveal>
@@ -694,7 +657,7 @@ export default function Home() {
           </div>
           <Reveal delay={0.2}>
             <details style={{ marginTop: 30 }}>
-              <summary className="mono" style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.55, cursor: 'pointer' }}>
+              <summary className="mono" style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.6, cursor: 'pointer' }}>
                 the full hackathon record ↓
               </summary>
               <div style={{ marginTop: 20 }}><RecordTimeline /></div>
@@ -706,16 +669,40 @@ export default function Home() {
       {/* ── the podcast ── */}
       <section className="frame frame-short">
         <div style={{ maxWidth: 560, width: '100%' }}>
-          <Reveal><ChapterLabel text={PODCAST.kicker} /><h2 className="serif chapter-title">{PODCAST.title}</h2></Reveal>
+          <Reveal><ChapterLabel text={`${PODCAST.kicker} · la radio`} /><h2 className="serif chapter-title">{PODCAST.title}</h2></Reveal>
           <Reveal delay={0.15}><p className="body-text" style={{ marginTop: 22 }}>{PODCAST.body}</p></Reveal>
           <Reveal delay={0.3}>
             <div style={{ marginTop: 30, display: 'flex', alignItems: 'center', gap: 20 }}>
               <Equalizer />
               <div>
-                <div className="serif" style={{ fontSize: 'clamp(1.6rem, 4vw, 2.4rem)' }}><Counter to={PODCAST.episodes} /></div>
-                <div className="mono" style={{ fontSize: 10, opacity: 0.4, letterSpacing: '0.12em', textTransform: 'uppercase' }}>episodes · wave radio</div>
+                <div className="serif" style={{ fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', color: COLORS.red }}><Counter to={PODCAST.episodes} /></div>
+                <div className="mono" style={{ fontSize: 10, opacity: 0.5, letterSpacing: '0.12em', textTransform: 'uppercase' }}>episodes · wave radio</div>
               </div>
             </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── the soul: mantra + passion ── */}
+      <section className="frame frame-short">
+        <div style={{ maxWidth: 620, textAlign: 'center' }}>
+          <Reveal>
+            <ChapterLabel text="l'anima · the honest part" />
+            <p className="serif" style={{ fontSize: 'clamp(1.4rem, 4vw, 2.2rem)', lineHeight: 1.4, marginTop: 8 }}>
+              i&apos;m happiest as the user of the thing i build. my own tools, my own agents pointed at my own life,
+              shipping the thing i wished existed. that&apos;s the whole engine.
+            </p>
+          </Reveal>
+          <Reveal delay={0.25}>
+            <div style={{ marginTop: 34, display: 'flex', justifyContent: 'center' }}>
+              <OliveBranch />
+            </div>
+            <p className="serif" style={{ fontSize: 'clamp(1.8rem, 5.5vw, 3.2rem)', marginTop: 22, color: COLORS.red }}>
+              {OSCAR.mantra}
+            </p>
+            <p className="mono" style={{ fontSize: 11, opacity: 0.5, marginTop: 14, letterSpacing: '0.06em' }}>
+              i keep betting on that. it keeps working out.
+            </p>
           </Reveal>
         </div>
       </section>
@@ -732,26 +719,26 @@ export default function Home() {
             </div>
           </Reveal>
           <Reveal delay={0.45}>
-            <p className="serif" style={{ fontSize: 'clamp(1.8rem, 5vw, 3rem)', marginTop: 48, textAlign: 'center' }}>{ASK.signoff}</p>
+            <p className="serif" style={{ fontSize: 'clamp(2rem, 6vw, 3.4rem)', marginTop: 52, textAlign: 'center' }}>{ASK.signoff}</p>
           </Reveal>
         </div>
       </section>
 
-      {/* ── the film + close ── */}
-      <section className="frame">
+      {/* ── close (no video — oscar's call) ── */}
+      <section className="frame frame-short">
         <div style={{ maxWidth: 640, width: '100%', textAlign: 'center' }}>
-          <Reveal><VideoBlock /></Reveal>
+          <Reveal>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}><OliveBranch flip /></div>
+            <a href={`mailto:${CONTACT.email}?subject=tuscany`} className="mode-switch">andiamo — {CONTACT.email}</a>
+          </Reveal>
           <Reveal delay={0.2}>
-            <div style={{ marginTop: 40, display: 'flex', gap: 18, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href={`mailto:${CONTACT.email}`} className="mode-switch">{CONTACT.email}</a>
+            <div style={{ marginTop: 26, display: 'flex', gap: 20, justifyContent: 'center' }}>
+              <a href={CONTACT.x} target="_blank" rel="noopener" className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', opacity: 0.55 }}>x ↗</a>
+              <a href={LINKS.github} target="_blank" rel="noopener" className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', opacity: 0.55 }}>github ↗</a>
+              <a href={CONTACT.site} target="_blank" rel="noopener" className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', opacity: 0.55 }}>portfolio ↗</a>
             </div>
-            <div style={{ marginTop: 24, display: 'flex', gap: 20, justifyContent: 'center' }}>
-              <a href={CONTACT.x} target="_blank" rel="noopener" className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', opacity: 0.5 }}>x ↗</a>
-              <a href={LINKS.github} target="_blank" rel="noopener" className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', opacity: 0.5 }}>github ↗</a>
-              <a href={CONTACT.site} target="_blank" rel="noopener" className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', opacity: 0.5 }}>portfolio ↗</a>
-            </div>
-            <p className="mono" style={{ fontSize: 10, opacity: 0.3, marginTop: 40, letterSpacing: '0.1em' }}>
-              made in five terminals · {OSCAR.location}
+            <p className="mono" style={{ fontSize: 10, opacity: 0.4, marginTop: 40, letterSpacing: '0.1em' }}>
+              made in five terminals · {OSCAR.location} · <span style={{ opacity: 0.7 }}>double-click anywhere for confetti</span>
             </p>
           </Reveal>
         </div>

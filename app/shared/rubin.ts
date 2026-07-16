@@ -105,7 +105,7 @@ export const VIDEO = {
 };
 
 export const CONTACT = {
-  email: 'omorke@gmail.com',
+  email: 'morkeeth@protonmail.com',
   x: 'https://x.com/morkeeth',
   site: 'https://morkeeth.vercel.app',
 };
