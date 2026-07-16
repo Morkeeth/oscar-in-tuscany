@@ -30,7 +30,7 @@ export const siteUrl =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "https://oscarintuscany.com");
 
-const title = "oscar in tuscany — an application to rick rubin";
+const title = "oscar in tuscany · an application to rick rubin";
 const description =
   "music guy turned agent builder. you bring 40 years of taste, i bring the tools. an application to the ai summer residency.";
 

@@ -1,7 +1,7 @@
 'use client';
 
 // ════════════════════════════════════════════════════════════
-//  oscar in tuscany — an application to rick rubin's ai summer residency
+//  oscar in tuscany - an application to rick rubin's ai summer residency
 //  fable language (dark, matisse, hand-drawn), tuscany-tinted.
 //  content: ../shared/rubin (pitch) + ../shared/data (the record)
 //  the paint, the wine and the confetti live here.
@@ -14,10 +14,10 @@ import { OSCAR, LINKS, STATS, statNum, FEATURED, HACKATHON_TIMELINE, COLORS, AGE
 import { RUBIN, BRIDGE, MACHINE, ANSWERS, AGENT_VOTES, PODCAST, ASK, CONTACT } from './shared/rubin';
 
 const PALETTE = Object.values(COLORS);
-// wine + gold live in fable.css, not the COLORS object — mirror them here for sketches
+// wine + gold live in fable.css, not the COLORS object - mirror them here for sketches
 const WINE = '#8e2b3b';
 
-// deterministic pseudo-random — rounded so SSR and client agree (see data.ts note)
+// deterministic pseudo-random - rounded so SSR and client agree (see data.ts note)
 function rnd(seed: number) {
   const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
   return Math.round((x - Math.floor(x)) * 1e6) / 1e6;
@@ -188,7 +188,7 @@ function CypressHills({ maximalism }: { maximalism: boolean }) {
   );
 }
 
-// a chianti pour — click to fill, captions in italian
+// a chianti pour - click to fill, captions in italian
 function ChiantiGlass() {
   const { ref, inView } = useDrawn();
   const [level, setLevel] = useState(0);
@@ -212,7 +212,7 @@ function ChiantiGlass() {
   );
 }
 
-// an olive branch — a little tuscan peace offering
+// an olive branch - a little tuscan peace offering
 function OliveBranch({ flip = false }: { flip?: boolean }) {
   const { ref, inView } = useDrawn();
   return (
@@ -235,7 +235,7 @@ function OliveBranch({ flip = false }: { flip?: boolean }) {
   );
 }
 
-// a little tricolore ribbon — italian symbolism, worn lightly
+// a little tricolore ribbon - italian symbolism, worn lightly
 function Tricolore() {
   return (
     <span style={{ display: 'inline-flex', height: 12, borderRadius: 3, overflow: 'hidden', boxShadow: '0 0 0 1px color-mix(in srgb, currentColor 18%, transparent)', verticalAlign: 'middle' }}>
@@ -495,6 +495,16 @@ function RecordTimeline() {
 //  page
 // ════════════════════════════════════════════════════════════
 
+// fun-first: lead with the agent builds + hackathon record, day jobs last.
+// show ALL of them, not a slice, grouped so rubin can scan the creative work.
+const TRACK_RANK: Record<string, number> = { agents: 0, hackathons: 1, work: 2 };
+const TRACK_LABEL: Record<string, string> = {
+  agents: 'the agent builds · nights & weekends',
+  hackathons: 'the hackathon circuit',
+  work: 'the day jobs',
+};
+const SHOWCASE = [...FEATURED].sort((a, b) => (TRACK_RANK[a.track] ?? 9) - (TRACK_RANK[b.track] ?? 9));
+
 const STAT_ITEMS = [
   { to: STATS.hackathonWins, prefix: '', suffix: '', label: 'hackathon wins' },
   { to: statNum(STATS.users), prefix: '', suffix: 'k', label: 'users shipped to' },
@@ -636,24 +646,32 @@ export default function Home() {
         <div style={{ maxWidth: 640, width: '100%' }}>
           <Reveal>
             <ChapterLabel text="past work · le prove" />
-            <h2 className="serif chapter-title">a decade of shipping under deadline.</h2>
+            <h2 className="serif chapter-title">the fun stuff first, the day jobs after.</h2>
           </Reveal>
           <div style={{ marginTop: 30, display: 'grid', gap: 12 }}>
-            {FEATURED.slice(0, 6).map((p, i) => (
-              <Reveal key={p.slug} delay={i * 0.06}>
-                <TiltCard>
-                  <div className="project-tile" style={{ '--pc': p.color, '--tilt': `${(rnd(i * 9 + 2) * 2.4 - 1.2).toFixed(2)}deg`, cursor: 'pointer' } as React.CSSProperties}
-                    onClick={(e) => burst(e.clientX, e.clientY, 14, p.color)} title="click for confetti">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-                      <h3 className="serif" style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.5rem)', color: p.color }}>{p.name.toLowerCase()}</h3>
-                      <span className="mono" style={{ fontSize: 10, opacity: 0.6, color: p.color }}>{p.result} · {p.year}</span>
+            {SHOWCASE.map((p, i) => {
+              const newTrack = i === 0 || SHOWCASE[i - 1].track !== p.track;
+              return (
+                <Reveal key={p.slug} delay={Math.min(i * 0.05, 0.4)}>
+                  {newTrack && (
+                    <div className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', opacity: 0.5, margin: i === 0 ? '0 0 6px' : '20px 0 6px' }}>
+                      {TRACK_LABEL[p.track]}
                     </div>
-                    <p style={{ fontSize: 13.5, lineHeight: 1.6, fontWeight: 400, opacity: 0.7, marginTop: 8 }}>{p.oneLiner}</p>
-                    {p.links?.live && <a href={p.links.live} target="_blank" rel="noopener" className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: p.color, opacity: 0.9, display: 'inline-block', marginTop: 10 }}>live ↗</a>}
-                  </div>
-                </TiltCard>
-              </Reveal>
-            ))}
+                  )}
+                  <TiltCard>
+                    <div className="project-tile" style={{ '--pc': p.color, '--tilt': `${(rnd(i * 9 + 2) * 2.4 - 1.2).toFixed(2)}deg`, cursor: 'pointer' } as React.CSSProperties}
+                      onClick={(e) => burst(e.clientX, e.clientY, 14, p.color)} title="click for confetti">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+                        <h3 className="serif" style={{ fontSize: 'clamp(1.1rem, 2.6vw, 1.5rem)', color: p.color }}>{p.name.toLowerCase()}</h3>
+                        <span className="mono" style={{ fontSize: 10, opacity: 0.6, color: p.color }}>{p.result} · {p.year}</span>
+                      </div>
+                      <p style={{ fontSize: 13.5, lineHeight: 1.6, fontWeight: 400, opacity: 0.7, marginTop: 8 }}>{p.oneLiner}</p>
+                      {p.links?.live && <a href={p.links.live} target="_blank" rel="noopener" className="mono" style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: p.color, opacity: 0.9, display: 'inline-block', marginTop: 10 }}>live ↗</a>}
+                    </div>
+                  </TiltCard>
+                </Reveal>
+              );
+            })}
           </div>
           <Reveal delay={0.2}>
             <details style={{ marginTop: 30 }}>
@@ -724,12 +742,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── close (no video — oscar's call) ── */}
+      {/* ── close (no video - oscar's call) ── */}
       <section className="frame frame-short">
         <div style={{ maxWidth: 640, width: '100%', textAlign: 'center' }}>
           <Reveal>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}><OliveBranch flip /></div>
-            <a href={`mailto:${CONTACT.email}?subject=tuscany`} className="mode-switch">andiamo — {CONTACT.email}</a>
+            <a href={`mailto:${CONTACT.email}?subject=tuscany`} className="mode-switch">andiamo · {CONTACT.email}</a>
           </Reveal>
           <Reveal delay={0.2}>
             <div style={{ marginTop: 26, display: 'flex', gap: 20, justifyContent: 'center' }}>

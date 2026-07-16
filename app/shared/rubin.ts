@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════
-//  RICK RUBIN · AI SUMMER RESIDENCY — the pitch content.
+//  RICK RUBIN · AI SUMMER RESIDENCY - the pitch content.
 //  Single source of truth for everything Rubin-specific. The record,
 //  timeline and projects still come from ./data.ts.
 //
@@ -28,7 +28,7 @@ export const BRIDGE = {
   pull: 'music as a product. ai as a tool. i have shipped both.',
 };
 
-// the machine, at a glance — the "agent usage" overview Rubin gets in 5 seconds.
+// the machine, at a glance - the "agent usage" overview Rubin gets in 5 seconds.
 export const MACHINE = {
   kicker: 'the machine',
   title: 'a one-person team, run by agents.',
@@ -80,7 +80,7 @@ export const AGENT_VOTES: { name: string; avatar: string; color: string; q: stri
   },
 ];
 
-// the podcast — the "i already do this, out loud, for free" proof.
+// the podcast - the "i already do this, out loud, for free" proof.
 export const PODCAST = {
   kicker: 'out loud, already',
   title: 'i host a podcast about exactly this.',
@@ -88,7 +88,7 @@ export const PODCAST = {
   episodes: 29,
 };
 
-// the ask — italy, said with the whole chest.
+// the ask - italy, said with the whole chest.
 export const ASK = {
   kicker: 'the ask',
   title: 'thirty days in tuscany. let us make something.',
@@ -96,7 +96,7 @@ export const ASK = {
   signoff: 'so. tuscany?',
 };
 
-// video — Oscar has one. drop the url here (youtube / vimeo / mp4) and the
+// video - Oscar has one. drop the url here (youtube / vimeo / mp4) and the
 // hero video slot lights up. left empty on purpose until the final cut is up.
 export const VIDEO = {
   url: '', // e.g. 'https://www.youtube.com/embed/XXXX' or a /public mp4 path

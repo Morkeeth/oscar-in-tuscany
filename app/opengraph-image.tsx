@@ -2,8 +2,8 @@ import { ImageResponse } from 'next/og';
 import { COLORS } from './shared/data';
 import { RUBIN } from './shared/rubin';
 
-// link-preview card — light tuscan: warm cream, matisse dots, the thesis, a tricolore.
-export const alt = 'oscar in tuscany — an application to rick rubin. you bring 40 years of taste, i bring the tools.';
+// link-preview card - light tuscan: warm cream, matisse dots, the thesis, a tricolore.
+export const alt = 'oscar in tuscany · an application to rick rubin. you bring 40 years of taste, i bring the tools.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
