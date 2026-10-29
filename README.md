@@ -1,4 +1,4 @@
-# Oscar Morkeeth ;  Portfolio
+# Oscar Morkeeth: Portfolio
 
 ## TLDR
 
